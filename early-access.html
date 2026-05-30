@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BuildAgentOS — Request Early Access</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --black:#060608; --surface:#0d0f14; --s2:#13161e; --s3:#1a1e28;
+  --border:rgba(255,255,255,0.07); --border-hi:rgba(255,255,255,0.13);
+  --orange:#FF5C1A; --orange-dim:rgba(255,92,26,0.12); --orange-glow:rgba(255,92,26,0.3);
+  --green:#10B981; --green-dim:rgba(16,185,129,0.1);
+  --blue:#3B82F6; --blue-dim:rgba(59,130,246,0.1);
+  --text:#F0F2F7; --t2:#8B95B0; --t3:#464E6A;
+  --fd:'Bebas Neue',sans-serif; --fb:'DM Sans',sans-serif; --fm:'JetBrains Mono',monospace;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--fb);background:var(--black);color:var(--text);min-height:100vh;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+
+/* BG */
+.bg-glow{position:fixed;inset:0;pointer-events:none;background:radial-gradient(ellipse 60% 50% at 50% 0%,rgba(255,92,26,0.06) 0%,transparent 70%);z-index:0}
+.bg-grid{position:fixed;inset:0;pointer-events:none;background-image:linear-gradient(rgba(255,255,255,.018) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.018) 1px,transparent 1px);background-size:60px 60px;mask-image:radial-gradient(ellipse 80% 80% at 50% 0%,black 20%,transparent 80%);z-index:0}
+
+/* HEADER */
+.header{padding:1.5rem 2rem;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);position:relative;z-index:10}
+.logo{display:flex;align-items:center;gap:.6rem;text-decoration:none}
+.logo-hex{width:28px;height:28px;background:var(--orange);clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);display:flex;align-items:center;justify-content:center;font-size:.5rem;color:#fff}
+.logo-text{font-family:var(--fd);font-size:1.25rem;letter-spacing:.04em}
+.logo-text span{color:var(--orange)}
+.header-tag{font-family:var(--fm);font-size:.68rem;color:var(--orange);text-transform:uppercase;letter-spacing:.1em;background:var(--orange-dim);border:1px solid rgba(255,92,26,.25);border-radius:3px;padding:.25rem .65rem}
+
+/* PROGRESS */
+.progress-bar-wrap{height:3px;background:var(--s2);position:relative;z-index:10}
+.progress-bar-fill{height:100%;background:linear-gradient(90deg,var(--orange),#ff8c5a);transition:width .5s ease;border-radius:0 2px 2px 0}
+
+/* MAIN */
+.main{max-width:680px;margin:0 auto;padding:3rem 2rem 6rem;position:relative;z-index:2}
+
+/* STEPS INDICATOR */
+.steps-indicator{display:flex;align-items:center;gap:0;margin-bottom:3rem;justify-content:center}
+.step-dot{width:28px;height:28px;border-radius:50%;border:1px solid var(--border-hi);background:var(--s2);display:flex;align-items:center;justify-content:center;font-family:var(--fm);font-size:.62rem;color:var(--t3);transition:all .3s;flex-shrink:0}
+.step-dot.done{background:var(--green);border-color:var(--green);color:#fff}
+.step-dot.active{background:var(--orange);border-color:var(--orange);color:#fff;box-shadow:0 0 12px var(--orange-glow)}
+.step-line{height:1px;width:40px;background:var(--border);flex-shrink:0;transition:background .3s}
+.step-line.done{background:var(--green)}
+
+/* FORM PANELS */
+.form-panel{display:none;animation:fadeUp .4s ease forwards}
+.form-panel.active{display:block}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+
+.panel-tag{font-family:var(--fm);font-size:.65rem;color:var(--orange);text-transform:uppercase;letter-spacing:.12em;margin-bottom:.75rem;display:block}
+.panel-title{font-family:var(--fd);font-size:2.5rem;letter-spacing:.02em;line-height:1;margin-bottom:.5rem}
+.panel-title span{color:var(--orange)}
+.panel-sub{font-size:.9rem;color:var(--t2);line-height:1.7;margin-bottom:2rem;font-weight:300}
+
+/* FORM ELEMENTS */
+.form-group{margin-bottom:1.25rem}
+.form-label{display:block;font-size:.72rem;color:var(--t3);text-transform:uppercase;letter-spacing:.08em;font-weight:600;margin-bottom:.5rem}
+.form-input,.form-select,.form-textarea{width:100%;background:var(--s2);border:1px solid var(--border-hi);border-radius:6px;padding:.75rem 1rem;color:var(--text);font-size:.88rem;font-family:var(--fb);outline:none;transition:border-color .2s,box-shadow .2s}
+.form-input:focus,.form-select:focus,.form-textarea:focus{border-color:var(--orange);box-shadow:0 0 0 3px var(--orange-dim)}
+.form-select option{background:var(--s2);color:var(--text)}
+.form-textarea{resize:vertical;min-height:100px;line-height:1.6}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+
+/* OPTION CARDS */
+.option-grid{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-bottom:1.5rem}
+.option-card{background:var(--s2);border:1px solid var(--border);border-radius:8px;padding:1.25rem;cursor:pointer;transition:all .2s;position:relative}
+.option-card:hover{border-color:rgba(255,92,26,.4);background:var(--s3)}
+.option-card.selected{border-color:var(--orange);background:var(--orange-dim)}
+.option-card.selected::after{content:'✓';position:absolute;top:.6rem;right:.75rem;color:var(--orange);font-size:.8rem;font-weight:700}
+.option-icon{font-size:1.5rem;margin-bottom:.6rem;display:block}
+.option-name{font-size:.88rem;font-weight:700;margin-bottom:.25rem}
+.option-desc{font-size:.72rem;color:var(--t2);line-height:1.5}
+.option-price{font-family:var(--fm);font-size:.72rem;color:var(--orange);margin-top:.5rem}
+.option-card.selected .option-price{color:var(--orange)}
+
+/* TIER CARDS */
+.tier-grid{display:flex;flex-direction:column;gap:.75rem;margin-bottom:1.5rem}
+.tier-card{background:var(--s2);border:1px solid var(--border);border-radius:8px;padding:1.1rem 1.25rem;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:1rem}
+.tier-card:hover{border-color:rgba(255,92,26,.4)}
+.tier-card.selected{border-color:var(--orange);background:var(--orange-dim)}
+.tier-card.selected .tier-radio{background:var(--orange);border-color:var(--orange)}
+.tier-radio{width:16px;height:16px;border-radius:50%;border:1px solid var(--border-hi);flex-shrink:0;transition:all .2s;display:flex;align-items:center;justify-content:center}
+.tier-radio::after{content:'';width:6px;height:6px;border-radius:50%;background:#fff;opacity:0;transition:opacity .2s}
+.tier-card.selected .tier-radio::after{opacity:1}
+.tier-info{flex:1}
+.tier-name{font-size:.88rem;font-weight:700}
+.tier-desc{font-size:.72rem;color:var(--t2);margin-top:.1rem}
+.tier-price{font-family:var(--fm);font-size:.88rem;color:var(--orange);font-weight:600;white-space:nowrap}
+
+/* ADDON CHECKBOXES */
+.addon-list{display:flex;flex-direction:column;gap:.6rem;margin-bottom:1.5rem}
+.addon-item{background:var(--s2);border:1px solid var(--border);border-radius:6px;padding:.85rem 1rem;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:.9rem}
+.addon-item:hover{border-color:rgba(255,92,26,.3)}
+.addon-item.checked{border-color:var(--green);background:var(--green-dim)}
+.addon-check{width:16px;height:16px;border-radius:3px;border:1px solid var(--border-hi);flex-shrink:0;transition:all .2s;display:flex;align-items:center;justify-content:center;font-size:.65rem}
+.addon-item.checked .addon-check{background:var(--green);border-color:var(--green);color:#fff}
+.addon-info{flex:1}
+.addon-name{font-size:.82rem;font-weight:600}
+.addon-desc{font-size:.7rem;color:var(--t2);margin-top:.1rem}
+.addon-price{font-family:var(--fm);font-size:.75rem;color:var(--green);white-space:nowrap}
+
+/* NAV BUTTONS */
+.btn-row{display:flex;gap:.75rem;margin-top:2rem}
+.btn-next{background:var(--orange);color:#fff;border:none;border-radius:6px;padding:.85rem 2rem;font-family:var(--fb);font-size:.9rem;font-weight:700;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:.5rem}
+.btn-next:hover{background:#e04a0f;transform:translateY(-1px);box-shadow:0 6px 20px var(--orange-glow)}
+.btn-back{background:transparent;color:var(--t2);border:1px solid var(--border-hi);border-radius:6px;padding:.85rem 1.5rem;font-family:var(--fb);font-size:.9rem;font-weight:500;cursor:pointer;transition:all .2s}
+.btn-back:hover{border-color:var(--t2);color:var(--text)}
+
+/* QUOTE SUMMARY */
+.quote-box{background:var(--s2);border:1px solid var(--border-hi);border-radius:10px;overflow:hidden;margin-bottom:1.5rem}
+.quote-header{background:var(--s3);padding:1rem 1.5rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+.quote-header-title{font-family:var(--fm);font-size:.68rem;text-transform:uppercase;letter-spacing:.1em;color:var(--orange)}
+.quote-ref{font-family:var(--fm);font-size:.68rem;color:var(--t3)}
+.quote-body{padding:1.5rem}
+.quote-line{display:flex;justify-content:space-between;align-items:center;padding:.6rem 0;border-bottom:1px solid var(--border);font-size:.82rem}
+.quote-line:last-child{border-bottom:none}
+.quote-line-name{color:var(--t2)}
+.quote-line-val{font-family:var(--fm);color:var(--text);font-weight:500}
+.quote-line.subtotal{margin-top:.5rem;padding-top:.75rem;border-top:1px solid var(--border-hi)}
+.quote-line.subtotal .quote-line-name{color:var(--text);font-weight:600}
+.quote-line.total{background:var(--orange-dim);border-radius:6px;padding:.75rem 1rem;margin-top:.5rem;border:1px solid rgba(255,92,26,.25)}
+.quote-line.total .quote-line-name{color:var(--orange);font-weight:700;font-size:.88rem}
+.quote-line.total .quote-line-val{color:var(--orange);font-size:1.1rem;font-family:var(--fd);letter-spacing:.02em}
+
+/* EMAIL PREVIEW */
+.email-preview{background:var(--s2);border:1px solid var(--border-hi);border-radius:10px;overflow:hidden;margin-bottom:1.5rem}
+.email-header{background:var(--s3);padding:1rem 1.5rem;border-bottom:1px solid var(--border)}
+.email-field{display:flex;gap:.75rem;align-items:center;margin-bottom:.4rem;font-size:.78rem}
+.email-field:last-child{margin-bottom:0}
+.email-field-label{color:var(--t3);font-family:var(--fm);font-size:.65rem;text-transform:uppercase;letter-spacing:.08em;width:40px;flex-shrink:0}
+.email-field-val{color:var(--t2)}
+.email-field-val.subject{color:var(--text);font-weight:600}
+.email-body{padding:1.5rem;font-size:.82rem;line-height:1.85;color:var(--t2);white-space:pre-wrap;max-height:320px;overflow-y:auto}
+.email-body strong{color:var(--text)}
+
+/* CONTRACT UPLOAD */
+.upload-zone{border:2px dashed var(--border-hi);border-radius:8px;padding:2.5rem;text-align:center;cursor:pointer;transition:all .2s;background:var(--s2);margin-bottom:1rem}
+.upload-zone:hover,.upload-zone.dragover{border-color:var(--orange);background:var(--orange-dim)}
+.upload-zone.has-file{border-color:var(--green);background:var(--green-dim);border-style:solid}
+.upload-icon{font-size:2rem;margin-bottom:.75rem;display:block}
+.upload-title{font-size:.88rem;font-weight:600;margin-bottom:.3rem}
+.upload-sub{font-size:.75rem;color:var(--t3)}
+.upload-file-name{font-family:var(--fm);font-size:.78rem;color:var(--green);margin-top:.5rem}
+#fileInput{display:none}
+
+/* SUCCESS */
+.success-wrap{text-align:center;padding:2rem 0}
+.success-icon{font-size:4rem;margin-bottom:1.5rem;display:block;animation:bounce .6s ease}
+@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+.success-title{font-family:var(--fd);font-size:3rem;letter-spacing:.02em;margin-bottom:.75rem}
+.success-title span{color:var(--orange)}
+.success-sub{font-size:.95rem;color:var(--t2);line-height:1.75;max-width:460px;margin:0 auto 2rem}
+.success-ref{font-family:var(--fm);font-size:.78rem;color:var(--orange);background:var(--orange-dim);border:1px solid rgba(255,92,26,.25);border-radius:4px;padding:.4rem .9rem;display:inline-block;margin-bottom:2rem}
+.success-links{display:flex;gap:.75rem;justify-content:center;flex-wrap:wrap}
+.success-link{display:inline-flex;align-items:center;gap:.4rem;padding:.7rem 1.4rem;border-radius:5px;font-size:.82rem;font-weight:600;text-decoration:none;transition:all .2s}
+.success-link.primary{background:var(--orange);color:#fff}
+.success-link.primary:hover{background:#e04a0f}
+.success-link.ghost{background:var(--s2);color:var(--t2);border:1px solid var(--border-hi)}
+.success-link.ghost:hover{border-color:var(--orange);color:var(--text)}
+
+@media(max-width:600px){
+  .option-grid{grid-template-columns:1fr}
+  .form-row{grid-template-columns:1fr}
+  .btn-row{flex-direction:column}
+}
+</style>
+</head>
+<body>
+<div class="bg-glow"></div>
+<div class="bg-grid"></div>
+
+<!-- HEADER -->
+<div class="header">
+  <a href="https://buildagentos.com" class="logo">
+    <div class="logo-hex">⬡</div>
+    <span class="logo-text">Build<span>Agent</span>OS</span>
+  </a>
+  <div class="header-tag">Early Access Application</div>
+</div>
+
+<!-- PROGRESS -->
+<div class="progress-bar-wrap">
+  <div class="progress-bar-fill" id="progressFill" style="width:16%"></div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- STEPS -->
+  <div class="steps-indicator" id="stepsIndicator">
+    <div class="step-dot active" id="sd0">1</div>
+    <div class="step-line" id="sl0"></div>
+    <div class="step-dot" id="sd1">2</div>
+    <div class="step-line" id="sl1"></div>
+    <div class="step-dot" id="sd2">3</div>
+    <div class="step-line" id="sl2"></div>
+    <div class="step-dot" id="sd3">4</div>
+    <div class="step-line" id="sl3"></div>
+    <div class="step-dot" id="sd4">5</div>
+    <div class="step-line" id="sl4"></div>
+    <div class="step-dot" id="sd5">6</div>
+  </div>
+
+  <!-- STEP 1: WELCOME + CONTACT -->
+  <div class="form-panel active" id="step0">
+    <span class="panel-tag">// Step 1 of 6 — Let's get started</span>
+    <h1 class="panel-title">WELCOME TO<br>BUILD<span>AGENT</span>OS</h1>
+    <p class="panel-sub">Thank you for choosing BuildAgentOS. We'll ask you a few quick questions to build a personalised quote and onboarding proposal — tailored exactly to your business.</p>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">First Name *</label>
+        <input class="form-input" id="firstName" type="text" placeholder="e.g. Mike">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Last Name *</label>
+        <input class="form-input" id="lastName" type="text" placeholder="e.g. Rodriguez">
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Company Name *</label>
+      <input class="form-input" id="company" type="text" placeholder="e.g. Sunrise Electrical LLC">
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Email Address *</label>
+        <input class="form-input" id="email" type="email" placeholder="you@yourcompany.com">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Phone Number</label>
+        <input class="form-input" id="phone" type="tel" placeholder="+1 (555) 000-0000">
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">City / State</label>
+        <input class="form-input" id="city" type="text" placeholder="e.g. Atlanta, GA">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Number of Field Staff *</label>
+        <select class="form-select" id="staffCount">
+          <option value="">Select range...</option>
+          <option value="1-10">1–10 staff</option>
+          <option value="11-25">11–25 staff</option>
+          <option value="26-50">26–50 staff</option>
+          <option value="51-100">51–100 staff</option>
+          <option value="100+">100+ staff</option>
+        </select>
+      </div>
+    </div>
+    <div class="btn-row">
+      <button class="btn-next" onclick="nextStep(1)">Continue — Choose Your Trade ⚡</button>
+    </div>
+  </div>
+
+  <!-- STEP 2: TRADE -->
+  <div class="form-panel" id="step1">
+    <span class="panel-tag">// Step 2 of 6 — Your trade</span>
+    <h1 class="panel-title">WHAT'S YOUR<br><span>PRIMARY TRADE?</span></h1>
+    <p class="panel-sub">Select your main trade. This helps us tailor the compliance agent, estimating templates, and crew skill matching to your specific work.</p>
+    <div class="option-grid" id="tradeGrid">
+      <div class="option-card" onclick="selectOption('trade','electrical',this)">
+        <span class="option-icon">⚡</span>
+        <div class="option-name">Electrical</div>
+        <div class="option-desc">Commercial, residential, industrial</div>
+      </div>
+      <div class="option-card" onclick="selectOption('trade','hvac',this)">
+        <span class="option-icon">🌡</span>
+        <div class="option-name">HVAC</div>
+        <div class="option-desc">Heating, ventilation, air conditioning</div>
+      </div>
+      <div class="option-card" onclick="selectOption('trade','plumbing',this)">
+        <span class="option-icon">💧</span>
+        <div class="option-name">Plumbing</div>
+        <div class="option-desc">Residential, commercial, drainage</div>
+      </div>
+      <div class="option-card" onclick="selectOption('trade','fire',this)">
+        <span class="option-icon">🔥</span>
+        <div class="option-name">Fire Protection</div>
+        <div class="option-desc">Suppression, sprinkler, detection</div>
+      </div>
+      <div class="option-card" onclick="selectOption('trade','mechanical',this)">
+        <span class="option-icon">⚙️</span>
+        <div class="option-name">Mechanical</div>
+        <div class="option-desc">Industrial, plant, equipment</div>
+      </div>
+      <div class="option-card" onclick="selectOption('trade','multi',this)">
+        <span class="option-icon">🏗</span>
+        <div class="option-name">Multi-Trade</div>
+        <div class="option-desc">Two or more trades under one company</div>
+      </div>
+    </div>
+    <div class="btn-row">
+      <button class="btn-back" onclick="prevStep(0)">← Back</button>
+      <button class="btn-next" onclick="nextStep(2)">Continue — Choose Product →</button>
+    </div>
+  </div>
+
+  <!-- STEP 3: PRODUCT -->
+  <div class="form-panel" id="step2">
+    <span class="panel-tag">// Step 3 of 6 — Choose your product</span>
+    <h1 class="panel-title">WHICH PRODUCT<br><span>DO YOU NEED?</span></h1>
+    <p class="panel-sub">Each product is a different entry point into the BuildAgentOS ecosystem. You can always upgrade later.</p>
+    <div class="tier-grid" id="productGrid">
+      <div class="tier-card" onclick="selectTier('product','core-starter',this,'497','459')">
+        <div class="tier-radio"></div>
+        <div class="tier-info">
+          <div class="tier-name">Core OS — Starter <span style="font-size:.68rem;color:var(--t3);font-weight:400">Up to 15 staff</span></div>
+          <div class="tier-desc">Scheduling + Dispatch + Acquisition agents. Perfect for owner-operators.</div>
+        </div>
+        <div class="tier-price">$497 / €459/mo</div>
+      </div>
+      <div class="tier-card" onclick="selectTier('product','core-growth',this,'997','919')">
+        <div class="tier-radio"></div>
+        <div class="tier-info">
+          <div class="tier-name">Core OS — Growth <span style="font-size:.68rem;color:var(--t3);font-weight:400">Up to 50 staff</span></div>
+          <div class="tier-desc">All 6 agents. Full autonomous ops stack. Most popular.</div>
+        </div>
+        <div class="tier-price">$997 / €919/mo</div>
+      </div>
+      <div class="tier-card" onclick="selectTier('product','enterprise-starter',this,'2497','2299')">
+        <div class="tier-radio"></div>
+        <div class="tier-info">
+          <div class="tier-name">Enterprise — Starter <span style="font-size:.68rem;color:var(--t3);font-weight:400">Up to 100 staff</span></div>
+          <div class="tier-desc">Multi-location, full CRM pipeline, API access.</div>
+        </div>
+        <div class="tier-price">$2,497 / €2,299/mo</div>
+      </div>
+      <div class="tier-card" onclick="selectTier('product','enterprise-pro',this,'5997','5499')">
+        <div class="tier-radio"></div>
+        <div class="tier-info">
+          <div class="tier-name">Enterprise — Pro <span style="font-size:.68rem;color:var(--t3);font-weight:400">Unlimited staff</span></div>
+          <div class="tier-desc">White-label, custom workflows, SOC 2, dedicated team.</div>
+        </div>
+        <div class="tier-price">$5,997 / €5,499/mo</div>
+      </div>
+      <div class="tier-card" onclick="selectTier('product','leadagent',this,'197','181')">
+        <div class="tier-radio"></div>
+        <div class="tier-info">
+          <div class="tier-name">LeadAgentOS — Standalone</div>
+          <div class="tier-desc">Autonomous lead generation daemon. Runs 24/7, no input needed.</div>
+        </div>
+        <div class="tier-price">$197 / €181/mo</div>
+      </div>
+    </div>
+    <div class="btn-row">
+      <button class="btn-back" onclick="prevStep(1)">← Back</button>
+      <button class="btn-next" onclick="nextStep(3)">Continue — Add-ons →</button>
+    </div>
+  </div>
+
+  <!-- STEP 4: ADD-ONS -->
+  <div class="form-panel" id="step3">
+    <span class="panel-tag">// Step 4 of 6 — Optional add-ons</span>
+    <h1 class="panel-title">POWER UP YOUR<br><span>SETUP</span></h1>
+    <p class="panel-sub">All optional. Add what you need — these will be included in your quote breakdown.</p>
+    <div class="addon-list">
+      <div class="addon-item" onclick="toggleAddon(this,'leadagent-bundle',97,89)">
+        <div class="addon-check">✓</div>
+        <div class="addon-info">
+          <div class="addon-name">LeadAgentOS Bundle</div>
+          <div class="addon-desc">Add the autonomous lead gen daemon to any Core or Enterprise plan</div>
+        </div>
+        <div class="addon-price">+$97 / €89/mo</div>
+      </div>
+      <div class="addon-item" onclick="toggleAddon(this,'onboarding',299,275)">
+        <div class="addon-check">✓</div>
+        <div class="addon-info">
+          <div class="addon-name">Priority Onboarding & Setup</div>
+          <div class="addon-desc">Dedicated onboarding session, data migration, custom workflow configuration</div>
+        </div>
+        <div class="addon-price">+$299 / €275 one-off</div>
+      </div>
+      <div class="addon-item" onclick="toggleAddon(this,'vercel',49,45)">
+        <div class="addon-check">✓</div>
+        <div class="addon-info">
+          <div class="addon-name">Vercel Infrastructure Upkeep</div>
+          <div class="addon-desc">Monthly hosting, deployment pipeline, auto-scaling, uptime monitoring</div>
+        </div>
+        <div class="addon-price">+$49 / €45/mo</div>
+      </div>
+      <div class="addon-item" onclick="toggleAddon(this,'support',149,137)">
+        <div class="addon-check">✓</div>
+        <div class="addon-info">
+          <div class="addon-name">Priority Support (SLA)</div>
+          <div class="addon-desc">4hr response time, dedicated Slack channel, monthly review call</div>
+        </div>
+        <div class="addon-price">+$149 / €137/mo</div>
+      </div>
+      <div class="addon-item" onclick="toggleAddon(this,'whitelabel',297,273)">
+        <div class="addon-check">✓</div>
+        <div class="addon-info">
+          <div class="addon-name">White-Label Branding</div>
+          <div class="addon-desc">Your logo, your colours, your domain — fully branded platform</div>
+        </div>
+        <div class="addon-price">+$297 / €273/mo</div>
+      </div>
+    </div>
+    <div class="btn-row">
+      <button class="btn-back" onclick="prevStep(2)">← Back</button>
+      <button class="btn-next" onclick="nextStep(4)">Continue — Review Quote →</button>
+    </div>
+  </div>
+
+  <!-- STEP 5: QUOTE + CONTRACT -->
+  <div class="form-panel" id="step4">
+    <span class="panel-tag">// Step 5 of 6 — Your quote & contract</span>
+    <h1 class="panel-title">YOUR CUSTOM<br><span>QUOTE</span></h1>
+    <p class="panel-sub">Here's your personalised pricing breakdown including VAT and monthly infrastructure costs. Review and upload your signed contract to proceed.</p>
+
+    <!-- Quote box populated by JS -->
+    <div class="quote-box" id="quoteBox"></div>
+
+    <!-- Contract upload -->
+    <div style="margin-bottom:1.5rem">
+      <label class="form-label">Upload Signed Contract (optional)</label>
+      <div class="upload-zone" id="uploadZone" onclick="document.getElementById('fileInput').click()" ondragover="handleDrag(event)" ondrop="handleDrop(event)">
+        <span class="upload-icon" id="uploadIcon">📄</span>
+        <div class="upload-title" id="uploadTitle">Drop your signed contract here</div>
+        <div class="upload-sub">PDF, DOC, or DOCX · Max 10MB</div>
+        <div class="upload-file-name" id="uploadFileName"></div>
+      </div>
+      <input type="file" id="fileInput" accept=".pdf,.doc,.docx" onchange="handleFileSelect(event)">
+      <p style="font-size:.72rem;color:var(--t3);margin-top:.5rem">Don't have a contract yet? We'll send one with your confirmation email for electronic signature.</p>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Any additional notes or questions?</label>
+      <textarea class="form-textarea" id="notes" placeholder="e.g. We currently use ServiceTitan and would need integration support..."></textarea>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn-back" onclick="prevStep(3)">← Back</button>
+      <button class="btn-next" onclick="nextStep(5)">Preview Your Email →</button>
+    </div>
+  </div>
+
+  <!-- STEP 6: EMAIL PREVIEW + SEND -->
+  <div class="form-panel" id="step5">
+    <span class="panel-tag">// Step 6 of 6 — Review & send</span>
+    <h1 class="panel-title">REVIEW YOUR<br><span>APPLICATION</span></h1>
+    <p class="panel-sub">This email will be sent to <strong style="color:var(--orange)">info@buildagentos.com</strong> and a copy to you. Review before sending.</p>
+
+    <div class="email-preview">
+      <div class="email-header">
+        <div class="email-field"><span class="email-field-label">To</span><span class="email-field-val">info@buildagentos.com</span></div>
+        <div class="email-field"><span class="email-field-label">CC</span><span class="email-field-val" id="prevCC">—</span></div>
+        <div class="email-field"><span class="email-field-label">Subject</span><span class="email-field-val subject" id="prevSubject">—</span></div>
+      </div>
+      <div class="email-body" id="prevBody">—</div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn-back" onclick="prevStep(4)">← Back</button>
+      <button class="btn-next" onclick="sendEmail()" style="background:var(--green)">
+        ✉ Send Application & Quote
+      </button>
+    </div>
+  </div>
+
+  <!-- SUCCESS -->
+  <div class="form-panel" id="stepSuccess">
+    <div class="success-wrap">
+      <span class="success-icon">🚀</span>
+      <h1 class="success-title">YOU'RE IN THE<br><span>QUEUE!</span></h1>
+      <p class="success-sub">Your early access application and quote have been sent to <strong style="color:var(--orange)">info@buildagentos.com</strong>. Bradley will personally review your application and be in touch within 24 hours.</p>
+      <div class="success-ref" id="successRef">Ref: BAO-XXXX</div>
+      <div class="success-links">
+        <a href="https://buildagentos.com/#demo" class="success-link primary">⚡ Try the Live Demo</a>
+        <a href="https://buildagentos.com" class="success-link ghost">← Back to Website</a>
+      </div>
+    </div>
+  </div>
+
+</div><!-- end main -->
+
+<script>
+// STATE
+const state = {
+  step: 0,
+  trade: null,
+  product: null,
+  productPrice: 0,
+  productPriceEur: 0,
+  productName: '',
+  addons: {},
+  fileName: null
+};
+
+const STEPS = 6;
+const VAT_RATE = 0.20;
+
+// NAVIGATION
+function nextStep(to) {
+  if (to === 1 && !validateStep0()) return;
+  if (to === 2 && !state.trade) { alert('Please select your trade.'); return; }
+  if (to === 3 && !state.product) { alert('Please select a product.'); return; }
+  if (to === 5) buildEmailPreview();
+  goTo(to);
+}
+
+function prevStep(to) { goTo(to); }
+
+function goTo(n) {
+  document.getElementById('step' + state.step).classList.remove('active');
+  state.step = n;
+  const el = document.getElementById(n === 'success' ? 'stepSuccess' : 'step' + n);
+  el.classList.add('active');
+  updateProgress(n);
+  window.scrollTo({top:0,behavior:'smooth'});
+  if (n === 4) buildQuote();
+}
+
+function updateProgress(n) {
+  const pct = n === 'success' ? 100 : Math.round(((n+1)/STEPS)*100);
+  document.getElementById('progressFill').style.width = pct + '%';
+  for (let i = 0; i < 6; i++) {
+    const dot = document.getElementById('sd'+i);
+    const line = document.getElementById('sl'+i);
+    if (!dot) continue;
+    dot.classList.remove('active','done');
+    if (i < n) { dot.classList.add('done'); dot.textContent = '✓'; }
+    else if (i === n) { dot.classList.add('active'); dot.textContent = i+1; }
+    else { dot.textContent = i+1; }
+    if (line) { line.classList.toggle('done', i < n); }
+  }
+}
+
+function validateStep0() {
+  const f = v => document.getElementById(v).value.trim();
+  if (!f('firstName') || !f('lastName') || !f('company') || !f('email') || !document.getElementById('staffCount').value) {
+    alert('Please fill in all required fields (*).');
+    return false;
+  }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(f('email'))) {
+    alert('Please enter a valid email address.');
+    return false;
+  }
+  return true;
+}
+
+// SELECTIONS
+function selectOption(type, val, el) {
+  document.querySelectorAll(`#${type}Grid .option-card`).forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  state[type] = val;
+}
+
+function selectTier(type, val, el, usd, eur) {
+  document.querySelectorAll(`#${type}Grid .tier-card`).forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  state.product = val;
+  state.productPrice = parseFloat(usd);
+  state.productPriceEur = parseFloat(eur);
+  state.productName = el.querySelector('.tier-name').textContent.trim();
+}
+
+function toggleAddon(el, key, usd, eur) {
+  el.classList.toggle('checked');
+  el.querySelector('.addon-check').textContent = el.classList.contains('checked') ? '✓' : '';
+  if (el.classList.contains('checked')) {
+    state.addons[key] = { name: el.querySelector('.addon-name').textContent, usd, eur, isMonthly: !el.querySelector('.addon-price').textContent.includes('one-off') };
+  } else {
+    delete state.addons[key];
+  }
+}
+
+// QUOTE BUILDER
+function buildQuote() {
+  const box = document.getElementById('quoteBox');
+  const ref = 'BAO-' + Math.floor(Math.random()*9000+1000);
+  state.ref = ref;
+
+  let monthlyUSD = state.productPrice;
+  let monthlyEUR = state.productPriceEur;
+  let oneOffUSD = 0;
+  let oneOffEUR = 0;
+
+  let addonLines = '';
+  Object.values(state.addons).forEach(a => {
+    if (a.isMonthly) { monthlyUSD += a.usd; monthlyEUR += a.eur; }
+    else { oneOffUSD += a.usd; oneOffEUR += a.eur; }
+    addonLines += `<div class="quote-line"><span class="quote-line-name">${a.name}</span><span class="quote-line-val">${a.isMonthly ? '+$'+a.usd+' / €'+a.eur+'/mo' : '+$'+a.usd+' / €'+a.eur+' one-off'}</span></div>`;
+  });
+
+  const vatMonthlyUSD = monthlyUSD * VAT_RATE;
+  const vatMonthlyEUR = monthlyEUR * VAT_RATE;
+  const totalMonthlyUSD = monthlyUSD + vatMonthlyUSD;
+  const totalMonthlyEUR = monthlyEUR + vatMonthlyEUR;
+
+  const vatOneOffUSD = oneOffUSD * VAT_RATE;
+  const vatOneOffEUR = oneOffEUR * VAT_RATE;
+  const totalOneOffUSD = oneOffUSD + vatOneOffUSD;
+  const totalOneOffEUR = oneOffEUR + vatOneOffEUR;
+
+  state.quote = { monthlyUSD, monthlyEUR, totalMonthlyUSD, totalMonthlyEUR, oneOffUSD, oneOffEUR, totalOneOffUSD, totalOneOffEUR, ref };
+
+  let html = `<div class="quote-header"><span class="quote-header-title">// BuildAgentOS Quote</span><span class="quote-ref">Ref: ${ref}</span></div><div class="quote-body">`;
+  html += `<div class="quote-line"><span class="quote-line-name">${state.productName}</span><span class="quote-line-val">$${state.productPrice} / €${state.productPriceEur}/mo</span></div>`;
+  html += addonLines;
+  html += `<div class="quote-line subtotal"><span class="quote-line-name">Monthly Subtotal</span><span class="quote-line-val">$${monthlyUSD.toFixed(2)} / €${monthlyEUR.toFixed(2)}</span></div>`;
+  html += `<div class="quote-line"><span class="quote-line-name">VAT (20%)</span><span class="quote-line-val">$${vatMonthlyUSD.toFixed(2)} / €${vatMonthlyEUR.toFixed(2)}</span></div>`;
+  html += `<div class="quote-line total"><span class="quote-line-name">Total Monthly (inc. VAT)</span><span class="quote-line-val">$${totalMonthlyUSD.toFixed(2)} / €${totalMonthlyEUR.toFixed(2)}</span></div>`;
+  if (oneOffUSD > 0) {
+    html += `<div class="quote-line" style="margin-top:.75rem"><span class="quote-line-name">One-off Setup (inc. VAT 20%)</span><span class="quote-line-val">$${totalOneOffUSD.toFixed(2)} / €${totalOneOffEUR.toFixed(2)}</span></div>`;
+  }
+  html += `</div>`;
+  box.innerHTML = html;
+}
+
+// FILE UPLOAD
+function handleFileSelect(e) {
+  const file = e.target.files[0];
+  if (file) setFile(file);
+}
+function handleDrag(e) { e.preventDefault(); document.getElementById('uploadZone').classList.add('dragover'); }
+function handleDrop(e) {
+  e.preventDefault();
+  document.getElementById('uploadZone').classList.remove('dragover');
+  const file = e.dataTransfer.files[0];
+  if (file) setFile(file);
+}
+function setFile(file) {
+  state.fileName = file.name;
+  const zone = document.getElementById('uploadZone');
+  zone.classList.add('has-file');
+  document.getElementById('uploadIcon').textContent = '✅';
+  document.getElementById('uploadTitle').textContent = 'Contract attached';
+  document.getElementById('uploadFileName').textContent = file.name;
+}
+
+// EMAIL PREVIEW
+function buildEmailPreview() {
+  const q = state.quote;
+  const name = document.getElementById('firstName').value + ' ' + document.getElementById('lastName').value;
+  const company = document.getElementById('company').value;
+  const email = document.getElementById('email').value;
+  const phone = document.getElementById('phone').value;
+  const city = document.getElementById('city').value;
+  const staff = document.getElementById('staffCount').value;
+  const notes = document.getElementById('notes').value;
+  const tradeLabel = {electrical:'Electrical',hvac:'HVAC',plumbing:'Plumbing',fire:'Fire Protection',mechanical:'Mechanical',multi:'Multi-Trade'}[state.trade] || state.trade;
+
+  document.getElementById('prevCC').textContent = email;
+  document.getElementById('prevSubject').textContent = `BuildAgentOS Early Access Application — ${company} [Ref: ${q.ref}]`;
+
+  const addonNames = Object.values(state.addons).map(a => '• ' + a.name).join('\n') || '• None selected';
+
+  const body = `Dear Bradley,
+
+Thank you for BuildAgentOS — we are excited to get started.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+APPLICANT DETAILS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Name:          ${name}
+Company:       ${company}
+Email:         ${email}
+Phone:         ${phone || 'Not provided'}
+Location:      ${city || 'Not provided'}
+Field Staff:   ${staff}
+Trade:         ${tradeLabel}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SELECTED PRODUCT & QUOTE [Ref: ${q.ref}]
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Product:       ${state.productName}
+Base Price:    $${state.productPrice}/mo (€${state.productPriceEur}/mo)
+
+Add-ons Selected:
+${addonNames}
+
+── MONTHLY PRICING BREAKDOWN ──
+Subtotal:      $${q.monthlyUSD.toFixed(2)}/mo  (€${q.monthlyEUR.toFixed(2)}/mo)
+VAT (20%):     $${(q.monthlyUSD * VAT_RATE).toFixed(2)}/mo  (€${(q.monthlyEUR * VAT_RATE).toFixed(2)}/mo)
+Total/Month:   $${q.totalMonthlyUSD.toFixed(2)}/mo  (€${q.totalMonthlyEUR.toFixed(2)}/mo)
+${q.oneOffUSD > 0 ? `One-off Setup: $${q.totalOneOffUSD.toFixed(2)}  (€${q.totalOneOffEUR.toFixed(2)})\n` : ''}
+Contract:      ${state.fileName ? state.fileName + ' (attached)' : 'Please send contract for signature'}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ADDITIONAL NOTES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+${notes || 'No additional notes provided.'}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+We look forward to hearing from you.
+
+Kind regards,
+${name}
+${company}
+${email}
+${phone || ''}`;
+
+  state.emailBody = body;
+  state.emailSubject = document.getElementById('prevSubject').textContent;
+  document.getElementById('prevBody').textContent = body;
+}
+
+// SEND
+function sendEmail() {
+  const subject = encodeURIComponent(state.emailSubject);
+  const body = encodeURIComponent(state.emailBody);
+  const mailto = `mailto:info@buildagentos.com?cc=${encodeURIComponent(document.getElementById('email').value)}&subject=${subject}&body=${body}`;
+  window.location.href = mailto;
+  // Show success
+  setTimeout(() => {
+    document.getElementById('step5').classList.remove('active');
+    state.step = 'success';
+    document.getElementById('stepSuccess').classList.add('active');
+    document.getElementById('successRef').textContent = 'Ref: ' + state.ref;
+    document.getElementById('progressFill').style.width = '100%';
+  }, 800);
+}
+</script>
+</body>
+</html>
