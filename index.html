@@ -299,6 +299,20 @@ footer{border-top:1px solid var(--border);padding:2.5rem 2rem;background:var(--b
   .sb-stats{grid-template-columns:repeat(2,1fr)}
   .kanban{grid-template-columns:repeat(2,1fr)}
 }
+
+/* ── LANGUAGE SWITCHER ── */
+.lang-switcher{position:relative;display:inline-flex;align-items:center;margin-left:.75rem}
+.lang-btn{display:flex;align-items:center;gap:.4rem;background:var(--s2);border:1px solid var(--border-hi);border-radius:4px;padding:.38rem .75rem;cursor:pointer;font-family:var(--fb);font-size:.78rem;font-weight:500;color:var(--t2);transition:all .2s}
+.lang-btn:hover{border-color:var(--orange);color:var(--text)}
+.lang-arrow{font-size:.55rem;color:var(--t3);transition:transform .2s}
+.lang-dropdown{position:absolute;top:calc(100% + .4rem);right:0;background:var(--s2);border:1px solid var(--border-hi);border-radius:6px;overflow:hidden;box-shadow:0 8px 30px rgba(0,0,0,.4);z-index:999;display:none;min-width:130px}
+.lang-dropdown.open{display:block}
+.lang-option{display:flex;align-items:center;gap:.6rem;padding:.55rem .9rem;cursor:pointer;font-size:.78rem;color:var(--t2);transition:background .15s;white-space:nowrap}
+.lang-option:hover{background:var(--s3);color:var(--text)}
+.lang-option.active{color:var(--orange);background:var(--orange-dim)}
+/* EUR price */
+.eur-price{font-size:.72rem;color:var(--text);font-family:var(--fm);margin-left:.3rem}
+.price-dual{display:flex;align-items:baseline;gap:.3rem;flex-wrap:wrap}
 </style>
 </head>
 <body>
@@ -317,6 +331,21 @@ footer{border-top:1px solid var(--border);padding:2.5rem 2rem;background:var(--b
       <li><a href="#pricing">Pricing</a></li>
       <li><a href="/early-access.html" class="nav-cta">Request Access</a></li>
     </ul>
+    <div class="lang-switcher" id="langSwitcher">
+      <div class="lang-btn" onclick="toggleLang()">
+        <span id="langFlag">🇬🇧</span>
+        <span id="langCode">EN</span>
+        <span class="lang-arrow" id="langArrow">▼</span>
+      </div>
+      <div class="lang-dropdown" id="langDropdown">
+        <div class="lang-option active" onclick="setLang('EN','🇬🇧')">🇬🇧 English</div>
+        <div class="lang-option" onclick="setLang('ES','🇪🇸')">🇪🇸 Español</div>
+        <div class="lang-option" onclick="setLang('FR','🇫🇷')">🇫🇷 Français</div>
+        <div class="lang-option" onclick="setLang('IT','🇮🇹')">🇮🇹 Italiano</div>
+        <div class="lang-option" onclick="setLang('NL','🇳🇱')">🇳🇱 Nederlands</div>
+        <div class="lang-option" onclick="setLang('GR','🇬🇷')">🇬🇷 Ελληνικά</div>
+      </div>
+    </div>
   </div>
 </nav>
 
@@ -491,7 +520,7 @@ footer{border-top:1px solid var(--border);padding:2.5rem 2rem;background:var(--b
           <p>The foundational 6-agent platform for specialty contractors running crews of 10–50. Replaces your scheduler, estimator, dispatcher, compliance tracker, and billing admin — with autonomous AI agents that coordinate each other in real time.</p>
         </div>
         <div class="pc-body">
-          <div class="pc-price"><span class="amt">$497</span><span class="per">– $997 / month</span></div>
+          <div class="pc-price"><span class="amt">$497 <span class="eur-price">/ €459</span></span><span class="per">– $997 / €919 /mo</span></div>
           <ul class="pc-features">
             <li><span class="ck">✓</span> All 6 autonomous agents deployed</li>
             <li><span class="ck">✓</span> Lead qualification + auto-scheduling</li>
@@ -513,7 +542,7 @@ footer{border-top:1px solid var(--border);padding:2.5rem 2rem;background:var(--b
           <p>Built for contractors running 50–200+ field staff across multiple locations, divisions, or franchise operations. Adds multi-site coordination, white-label client portals, advanced analytics, custom agent workflows, and a full CRM pipeline from lead to invoice to renewal.</p>
         </div>
         <div class="pc-body">
-          <div class="pc-price"><span class="amt">$2,497</span><span class="per">– $9,997 / month</span></div>
+          <div class="pc-price"><span class="amt">$2,497 <span class="eur-price">/ €2,299</span></span><span class="per">– $9,997 / €9,199 /mo</span></div>
           <ul class="pc-features">
             <li><span class="ck">✓</span> Everything in Core, unlimited scale</li>
             <li><span class="ck">✓</span> Multi-location / multi-division management</li>
@@ -536,7 +565,7 @@ footer{border-top:1px solid var(--border);padding:2.5rem 2rem;background:var(--b
           <p>A standalone daemon that runs on your Mac or server 24/7. Every 6 hours it scans 5 random cities × 3 industries, finds businesses with no website or weak web presence, scores them 0–100, finds decision-maker emails via Hunter.io, sends personalized outreach from your email, checks replies, categorizes them as Hot/Warm/Cold, and exports hot leads directly into BuildAgentOS. It's your autonomous outbound sales rep — running while you sleep.</p>
         </div>
         <div class="pc-body">
-          <div class="pc-price"><span class="amt">$197</span><span class="per">/ month (standalone) · Free add-on with Core+</span></div>
+          <div class="pc-price"><span class="amt">$197 <span class="eur-price">/ €181</span></span><span class="per">/ month · Free add-on with Core+</span></div>
           <ul class="pc-features">
             <li><span class="ck">✓</span> Runs every 6hrs autonomously — no input needed</li>
             <li><span class="ck">✓</span> Scans Google Places across cities + industries</li>
@@ -854,7 +883,7 @@ footer{border-top:1px solid var(--border);padding:2.5rem 2rem;background:var(--b
         <div class="price-card">
           <div class="price-tier">Starter</div>
           <h3 style="font-size:1.05rem;font-weight:700;margin-bottom:.35rem">Field Essentials</h3>
-          <div class="price-amt"><span class="dollar">$497</span><span class="per">/month</span></div>
+          <div class="price-amt price-dual"><span class="dollar">$497</span><span class="eur-price">/ €459</span><span class="per">/mo</span></div>
           <p class="price-desc">For owner-operators and small crews. Up to 15 field staff. First 3 agents deployed.</p>
           <ul class="pf-list">
             <li><span class="ck">✓</span> Customer Acquisition Agent</li>
@@ -869,7 +898,7 @@ footer{border-top:1px solid var(--border);padding:2.5rem 2rem;background:var(--b
         <div class="price-card featured">
           <div class="price-tier">Growth</div>
           <h3 style="font-size:1.05rem;font-weight:700;margin-bottom:.35rem">Full Agent OS</h3>
-          <div class="price-amt"><span class="dollar">$997</span><span class="per">/month</span></div>
+          <div class="price-amt price-dual"><span class="dollar">$997</span><span class="eur-price">/ €919</span><span class="per">/mo</span></div>
           <p class="price-desc">The complete 6-agent autonomous ops stack. Up to 50 field staff. Everything runs on autopilot.</p>
           <ul class="pf-list">
             <li><span class="ck">✓</span> All 6 agents fully deployed</li>
@@ -910,7 +939,7 @@ footer{border-top:1px solid var(--border);padding:2.5rem 2rem;background:var(--b
         <div class="price-card">
           <div class="price-tier">Enterprise Starter</div>
           <h3 style="font-size:1.05rem;font-weight:700;margin-bottom:.35rem">Multi-Location</h3>
-          <div class="price-amt"><span class="dollar">$2,497</span><span class="per">/month</span></div>
+          <div class="price-amt price-dual"><span class="dollar">$2,497</span><span class="eur-price">/ €2,299</span><span class="per">/mo</span></div>
           <p class="price-desc">Multi-location management for contractors with 2–5 divisions or offices. Up to 100 field staff.</p>
           <ul class="pf-list">
             <li><span class="ck">✓</span> All 6 Core agents per location</li>
@@ -925,7 +954,7 @@ footer{border-top:1px solid var(--border);padding:2.5rem 2rem;background:var(--b
         <div class="price-card featured">
           <div class="price-tier">Enterprise Pro</div>
           <h3 style="font-size:1.05rem;font-weight:700;margin-bottom:.35rem">Full Enterprise OS</h3>
-          <div class="price-amt"><span class="dollar">$5,997</span><span class="per">/month</span></div>
+          <div class="price-amt price-dual"><span class="dollar">$5,997</span><span class="eur-price">/ €5,499</span><span class="per">/mo</span></div>
           <p class="price-desc">The complete enterprise platform. Unlimited locations, custom workflows, white-label, analytics.</p>
           <ul class="pf-list">
             <li><span class="ck">✓</span> Everything in Enterprise Starter</li>
@@ -942,7 +971,7 @@ footer{border-top:1px solid var(--border);padding:2.5rem 2rem;background:var(--b
         <div class="price-card">
           <div class="price-tier">Enterprise Custom</div>
           <h3 style="font-size:1.05rem;font-weight:700;margin-bottom:.35rem">Franchise / GC</h3>
-          <div class="price-amt"><span class="dollar" style="font-size:2.5rem">$9,997+</span></div>
+          <div class="price-amt price-dual"><span class="dollar" style="font-size:2.5rem">$9,997+</span><span class="eur-price">/ €9,199+</span></div>
           <p class="price-desc">For large GCs, franchise operations, and equipment suppliers requiring white-label or vertical-specific deployments.</p>
           <ul class="pf-list">
             <li><span class="ck">✓</span> Full white-label platform</li>
@@ -967,7 +996,7 @@ footer{border-top:1px solid var(--border);padding:2.5rem 2rem;background:var(--b
         <div class="price-card">
           <div class="price-tier">Standalone</div>
           <h3 style="font-size:1.05rem;font-weight:700;margin-bottom:.35rem">LeadAgent Solo</h3>
-          <div class="price-amt"><span class="dollar">$197</span><span class="per">/month</span></div>
+          <div class="price-amt price-dual"><span class="dollar">$197</span><span class="eur-price">/ €181</span><span class="per">/mo</span></div>
           <p class="price-desc">Run LeadAgentOS on its own, export leads to any CRM or spreadsheet. Mac or server deployment.</p>
           <ul class="pf-list">
             <li><span class="ck">✓</span> Runs every 6hrs autonomously</li>
@@ -983,7 +1012,7 @@ footer{border-top:1px solid var(--border);padding:2.5rem 2rem;background:var(--b
         <div class="price-card featured">
           <div class="price-tier">Bundled</div>
           <h3 style="font-size:1.05rem;font-weight:700;margin-bottom:.35rem">Core + LeadAgent</h3>
-          <div class="price-amt"><span class="dollar">$997</span><span class="per">/month</span></div>
+          <div class="price-amt price-dual"><span class="dollar">$997</span><span class="eur-price">/ €919</span><span class="per">/mo</span></div>
           <p class="price-desc">The full autonomous sales + ops stack. LeadAgent feeds the pipeline. Core agents close and deliver.</p>
           <ul class="pf-list">
             <li><span class="ck">✓</span> Everything in LeadAgent Solo</li>
@@ -998,7 +1027,7 @@ footer{border-top:1px solid var(--border);padding:2.5rem 2rem;background:var(--b
         <div class="price-card">
           <div class="price-tier">Enterprise Bundle</div>
           <h3 style="font-size:1.05rem;font-weight:700;margin-bottom:.35rem">Enterprise + LeadAgent</h3>
-          <div class="price-amt"><span class="dollar" style="font-size:2.2rem">From $2,997</span></div>
+          <div class="price-amt price-dual"><span class="dollar" style="font-size:2.2rem">From $2,997</span><span class="eur-price">/ €2,759</span></div>
           <p class="price-desc">Multi-location lead gen feeding into the Enterprise CRM pipeline. Full autonomous outbound at scale.</p>
           <ul class="pf-list">
             <li><span class="ck">✓</span> LeadAgent per market / division</li>
@@ -1126,6 +1155,129 @@ function optimizeSchedule() {
     setTimeout(() => { btn.textContent = '⚡ Re-Optimize Schedule'; btn.disabled = false; }, 3000);
   }, 2000);
 }
+
+
+// ── LANGUAGE SWITCHER ──
+const translations = {
+  EN: {
+    nav_pipeline:"How It Works", nav_products:"Products", nav_demo:"Live Demo",
+    nav_pricing:"Pricing", nav_cta:"Request Access",
+    hero_h1a:"THE AI OS THAT", hero_h1b:"RUNS YOUR", hero_h1c:"FIELD OPS",
+    hero_sub:"Six autonomous agents that find leads, generate quotes, schedule crews, manage compliance, and collect payments — without you lifting a finger.",
+    btn_demo:"Try Live Demo →", btn_pipeline:"See the Pipeline",
+    proof_lbl:"By the numbers",
+    cta_sub:"We are onboarding specialty contractors and investors in early access. No long-term contract to start.",
+    cta_btn:"Request Early Access →",
+    footer_by:"Founded by Bradley James Elliott · © 2026 BuildAgentOS",
+  },
+  ES: {
+    nav_pipeline:"Como Funciona", nav_products:"Productos", nav_demo:"Demo en Vivo",
+    nav_pricing:"Precios", nav_cta:"Solicitar Acceso",
+    hero_h1a:"EL SISTEMA OS", hero_h1b:"QUE GESTIONA", hero_h1c:"TUS OPERACIONES",
+    hero_sub:"Seis agentes autonomos que encuentran clientes, generan presupuestos, programan equipos, gestionan cumplimiento y cobran pagos — sin que muevas un dedo.",
+    btn_demo:"Probar Demo →", btn_pipeline:"Ver el Pipeline",
+    proof_lbl:"En numeros",
+    cta_sub:"Estamos incorporando contratistas especializados e inversores en acceso anticipado. Sin contrato a largo plazo.",
+    cta_btn:"Solicitar Acceso Anticipado →",
+    footer_by:"Fundado por Bradley James Elliott · © 2026 BuildAgentOS",
+  },
+  FR: {
+    nav_pipeline:"Comment Ca Marche", nav_products:"Produits", nav_demo:"Demo Live",
+    nav_pricing:"Tarifs", nav_cta:"Demander Acces",
+    hero_h1a:"LE SYSTEME OS QUI", hero_h1b:"GERE VOS", hero_h1c:"OPERATIONS TERRAIN",
+    hero_sub:"Six agents autonomes qui trouvent des prospects, generent des devis, planifient les equipes, gerent la conformite et collectent les paiements — sans lever le petit doigt.",
+    btn_demo:"Essayer la Demo →", btn_pipeline:"Voir le Pipeline",
+    proof_lbl:"En chiffres",
+    cta_sub:"Nous integrons des entrepreneurs specialises et des investisseurs en acces anticipe. Sans engagement long terme.",
+    cta_btn:"Demander Acces Anticipe →",
+    footer_by:"Fonde par Bradley James Elliott · © 2026 BuildAgentOS",
+  },
+  IT: {
+    nav_pipeline:"Come Funziona", nav_products:"Prodotti", nav_demo:"Demo Live",
+    nav_pricing:"Prezzi", nav_cta:"Richiedi Accesso",
+    hero_h1a:"IL SISTEMA OS CHE", hero_h1b:"GESTISCE LE TUE", hero_h1c:"OPERAZIONI SUL CAMPO",
+    hero_sub:"Sei agenti autonomi che trovano lead, generano preventivi, pianificano squadre, gestiscono la conformita e riscuotono pagamenti — senza che tu muova un dito.",
+    btn_demo:"Prova la Demo →", btn_pipeline:"Vedi il Pipeline",
+    proof_lbl:"Nei numeri",
+    cta_sub:"Stiamo integrando appaltatori specializzati e investitori in accesso anticipato. Nessun contratto a lungo termine.",
+    cta_btn:"Richiedi Accesso Anticipato →",
+    footer_by:"Fondato da Bradley James Elliott · © 2026 BuildAgentOS",
+  },
+  NL: {
+    nav_pipeline:"Hoe Het Werkt", nav_products:"Producten", nav_demo:"Live Demo",
+    nav_pricing:"Prijzen", nav_cta:"Toegang Aanvragen",
+    hero_h1a:"HET AI OS DAT", hero_h1b:"UW VELD", hero_h1c:"OPERATIES BEHEERT",
+    hero_sub:"Zes autonome agenten die leads vinden, offertes genereren, teams inplannen, naleving beheren en betalingen innen — zonder dat u een vinger uitsteekt.",
+    btn_demo:"Probeer Demo →", btn_pipeline:"Zie de Pipeline",
+    proof_lbl:"In cijfers",
+    cta_sub:"We nemen gespecialiseerde aannemers en investeerders op in vroege toegang. Geen langetermijncontract vereist.",
+    cta_btn:"Vroege Toegang Aanvragen →",
+    footer_by:"Opgericht door Bradley James Elliott · © 2026 BuildAgentOS",
+  },
+  GR: {
+    nav_pipeline:"Πως Λειτουργει", nav_products:"Προιοντα", nav_demo:"Ζωντανη Επιδειξη",
+    nav_pricing:"Τιμες", nav_cta:"Αιτηση Προσβασης",
+    hero_h1a:"ΤΟ ΣΥΣΤΗΜΑ AI", hero_h1b:"ΠΟΥ ΔΙΑΧΕΙΡΙΖΕΤΑΙ", hero_h1c:"ΤΙΣ ΕΠΙΧΕΙΡΗΣΕΙΣ ΣΑΣ",
+    hero_sub:"Εξι αυτονομοι πρακτορες που βρισκουν leads, δημιουργουν προσφορες, προγραμματιζουν ομαδες και εισπραττουν πληρωμες.",
+    btn_demo:"Δοκιμαστε Επιδειξη →", btn_pipeline:"Δειτε το Pipeline",
+    proof_lbl:"Με νουμερα",
+    cta_sub:"Εντασσουμε εξειδικευμενους εργολαβους και επενδυτες σε πρωιμη προσβαση. Χωρις μακροπροθεσμο συμβολαιο.",
+    cta_btn:"Αιτηση Πρωιμης Προσβασης →",
+    footer_by:"Ιδρυθηκε απο τον Bradley James Elliott · © 2026 BuildAgentOS",
+  }
+};
+
+function toggleLang() {
+  const dd = document.getElementById('langDropdown');
+  const arrow = document.getElementById('langArrow');
+  dd.classList.toggle('open');
+  arrow.style.transform = dd.classList.contains('open') ? 'rotate(180deg)' : '';
+}
+
+function setLang(code, flag) {
+  document.getElementById('langCode').textContent = code;
+  document.getElementById('langFlag').textContent = flag;
+  document.getElementById('langDropdown').classList.remove('open');
+  document.getElementById('langArrow').style.transform = '';
+  document.querySelectorAll('.lang-option').forEach(o => {
+    const map = {EN:'English',ES:'Español',FR:'Français',IT:'Italiano',NL:'Nederlands',GR:'Ελληνικά'};
+    o.classList.toggle('active', o.textContent.trim().includes(map[code]||code));
+  });
+  applyTranslation(code);
+}
+
+function applyTranslation(code) {
+  const t = translations[code];
+  if (!t) return;
+  const navLinks = document.querySelectorAll('nav ul a:not(.nav-cta)');
+  const keys = ['nav_pipeline','nav_products','nav_demo','nav_pricing'];
+  navLinks.forEach((el,i) => { if(keys[i]) el.textContent = t[keys[i]]; });
+  const cta = document.querySelector('nav .nav-cta');
+  if(cta) cta.textContent = t.nav_cta;
+  const h1 = document.querySelector('h1');
+  if(h1) h1.innerHTML = t.hero_h1a+'<br>'+t.hero_h1b+'<br><span class="ac">'+t.hero_h1c+'</span>';
+  const heroSub = document.querySelector('.hero-sub');
+  if(heroSub) heroSub.textContent = t.hero_sub;
+  const btns = document.querySelectorAll('.hero-acts .btn');
+  if(btns[0]) btns[0].textContent = t.btn_demo;
+  if(btns[1]) btns[1].textContent = t.btn_pipeline;
+  const pl = document.querySelector('.proof-lbl');
+  if(pl) pl.textContent = t.proof_lbl;
+  const ctaSub = document.querySelector('.cta-sec .ssub');
+  if(ctaSub) ctaSub.textContent = t.cta_sub;
+  const ctaBtn = document.querySelector('.cta-sec .btn-primary');
+  if(ctaBtn) ctaBtn.textContent = t.cta_btn;
+  const footBy = document.querySelector('.foot-by');
+  if(footBy) footBy.textContent = t.footer_by;
+}
+
+document.addEventListener('click', e => {
+  const sw = document.getElementById('langSwitcher');
+  if(sw && !sw.contains(e.target)) {
+    document.getElementById('langDropdown').classList.remove('open');
+    document.getElementById('langArrow').style.transform = '';
+  }
+});
 
 // Scroll reveals
 const observer = new IntersectionObserver(entries => {
