@@ -417,63 +417,54 @@ footer{border-top:1px solid var(--border);padding:2.5rem 2rem;background:var(--b
         <div class="pipe-step">
           <div class="pipe-num">01</div>
           <div class="pipe-content">
-            <h3>LeadAgent — Autonomous Lead Generation</h3>
-            <p>Runs every 6 hours. Scans 5 cities × 3 industries, finds businesses with no website or weak web presence, scores them 0–100 (0 = no site = hottest lead), finds contact emails via Hunter.io, and sends personalized outreach automatically. Hot leads flow directly into the pipeline.</p>
-            <div class="pipe-tags"><span class="ptag">Google Places API</span><span class="ptag">Hunter.io</span><span class="ptag">Auto-outreach</span><span class="ptag">Lead scoring</span></div>
+            <h3>Lead Qualifier — Decide What's Worth Time</h3>
+            <p>Scores every incoming lead 0–100 on urgency, description completeness, and contact channels. Checks service area and a 30-day duplicate guard. Score 70+ auto-advances to the Estimator. Scores 50–69 go to manual review. Duplicates or out-of-area leads are logged, not silently dropped.</p>
+            <div class="pipe-tags"><span class="ptag">Lead scoring</span><span class="ptag">Service-area check</span><span class="ptag">Duplicate guard</span><span class="ptag">Auto-routing</span></div>
           </div>
         </div>
 
         <div class="pipe-step">
           <div class="pipe-num">02</div>
           <div class="pipe-content">
-            <h3>Customer Acquisition Agent — Qualify & Convert</h3>
-            <p>Takes incoming leads and scores them 0–100 based on project size, timeline, location, budget, and crew availability. Scores above 70 trigger automatic site visit scheduling via SMS and calendar. Below 70 go into a nurture sequence. Handles all follow-up communication in your voice.</p>
-            <div class="pipe-tags"><span class="ptag">Lead scoring</span><span class="ptag">SMS/email</span><span class="ptag">Auto-scheduling</span><span class="ptag">CRM update</span></div>
+            <h3>Estimator — Build the Quote</h3>
+            <p>Analyzes project details and photos using Claude, prices materials with a contingency buffer, applies your labor rate, overhead, and margin, and scores its own confidence. High confidence and a total under $10K sends the quote automatically. Over $50K always comes back to you for review. Over $250K is blocked outright.</p>
+            <div class="pipe-tags"><span class="ptag">AI-powered analysis</span><span class="ptag">Material pricing</span><span class="ptag">Confidence scoring</span><span class="ptag">Auto-proposal</span></div>
           </div>
         </div>
 
         <div class="pipe-step">
           <div class="pipe-num">03</div>
           <div class="pipe-content">
-            <h3>Estimating & Bidding Agent — Instant Accurate Quotes</h3>
-            <p>Analyzes project plans and photos using GPT-4 Vision, queries your historical project database for comparable jobs, pulls real-time material prices, calculates labor hours using ML models, applies your overhead and margin, and generates a professional proposal — all in seconds, 85%+ accuracy within 10% of actual cost.</p>
-            <div class="pipe-tags"><span class="ptag">Vision AI</span><span class="ptag">Historical DB</span><span class="ptag">Material pricing</span><span class="ptag">Auto-proposal</span></div>
+            <h3>Scheduler — Crew Dispatch</h3>
+            <p>Finds the nearest crew with the right skill and actual capacity — reading real bookings out of the database, not just checking a calendar. Emergency jobs get same-day priority; standard jobs are slotted within 4 business days.</p>
+            <div class="pipe-tags"><span class="ptag">Capacity-aware</span><span class="ptag">Skill matching</span><span class="ptag">Emergency priority</span><span class="ptag">Auto-dispatch</span></div>
           </div>
         </div>
 
         <div class="pipe-step">
           <div class="pipe-num">04</div>
           <div class="pipe-content">
-            <h3>Scheduling & Dispatch Agent — Crew Optimization</h3>
-            <p>Solves the daily constraint optimization problem: assign the right crew (skills, certifications) to the right job, minimize total drive time, check weather for outdoor work, respect customer time windows, and handle callouts by auto-reassigning without you making a single call. Sends crew notifications automatically.</p>
-            <div class="pipe-tags"><span class="ptag">Route optimization</span><span class="ptag">Google Maps</span><span class="ptag">Weather check</span><span class="ptag">Auto-dispatch</span></div>
+            <h3>Execution — Site Guardrails</h3>
+            <p>Tracks jobs to completion. Change orders over $500 need approval. Won't flip a job to "completed" without a customer signature and at least 2 photos. Safety incidents trigger a critical stop with immediate owner notification.</p>
+            <div class="pipe-tags"><span class="ptag">Photo verification</span><span class="ptag">Change-order gating</span><span class="ptag">Safety stop</span><span class="ptag">Completion tracking</span></div>
           </div>
         </div>
 
         <div class="pipe-step">
           <div class="pipe-num">05</div>
           <div class="pipe-content">
-            <h3>Project Execution Agent — Site Intelligence</h3>
-            <p>Monitors active jobs in real time. Analyzes progress photos from crew mobile apps, tracks milestones, detects delays before they cascade, coordinates subcontractors and material deliveries, flags change orders, and keeps clients automatically updated. Reduces human check-in calls by 80%.</p>
-            <div class="pipe-tags"><span class="ptag">Vision analysis</span><span class="ptag">Progress tracking</span><span class="ptag">Change orders</span><span class="ptag">Client comms</span></div>
+            <h3>Compliance — Per-Jurisdiction Checks</h3>
+            <p>Checks permit thresholds by city, crew license validity, and insurance currency for that specific job's jurisdiction. An expired license is a hard block, not a warning.</p>
+            <div class="pipe-tags"><span class="ptag">Permit thresholds</span><span class="ptag">License validation</span><span class="ptag">Insurance checks</span><span class="ptag">Hard blocks</span></div>
           </div>
         </div>
 
         <div class="pipe-step">
           <div class="pipe-num">06</div>
           <div class="pipe-content">
-            <h3>Compliance & Docs Agent — Zero Violations</h3>
-            <p>Tracks all permits, certifications, insurance certificates, and inspection deadlines across every active job. Auto-renews permits before expiry, generates OSHA safety checklists per job type, manages lien waivers and closeout documents, and keeps a full audit trail for SOC 2 compliance.</p>
-            <div class="pipe-tags"><span class="ptag">Permit management</span><span class="ptag">OSHA checklists</span><span class="ptag">Auto-renewal</span><span class="ptag">Audit trail</span></div>
-          </div>
-        </div>
-
-        <div class="pipe-step">
-          <div class="pipe-num">07</div>
-          <div class="pipe-content">
-            <h3>Billing & Collections Agent — Get Paid Faster</h3>
-            <p>Generates milestone-based or T&M invoices automatically when job stages complete, processes payments via Stripe and ACH, sends intelligent payment reminders that don't damage client relationships, syncs bidirectionally with QuickBooks, and reduces your DSO (Days Sales Outstanding) by 20%+.</p>
-            <div class="pipe-tags"><span class="ptag">Auto-invoicing</span><span class="ptag">Stripe / ACH</span><span class="ptag">QuickBooks sync</span><span class="ptag">AR aging</span></div>
+            <h3>Billing — Paid, Only When Done</h3>
+            <p>Refuses to generate an invoice until the Execution agent confirms the job is verifiably complete — signature and photos on file. Once confirmed, generates the invoice automatically and processes payment via Stripe.</p>
+            <div class="pipe-tags"><span class="ptag">Completion-gated</span><span class="ptag">Auto-invoicing</span><span class="ptag">Stripe</span></div>
           </div>
         </div>
 
@@ -979,8 +970,8 @@ footer{border-top:1px solid var(--border);padding:2.5rem 2rem;background:var(--b
     <!-- LEADAGENT PRICING -->
     <div class="pricing-panel" id="pp-lead">
       <div class="pricing-context">
-        <div><div class="pctx-label">What It Does</div><div class="pctx-val">Autonomous outbound lead gen — runs 24/7, no input required</div></div>
-        <div><div class="pctx-label">External API Costs</div><div class="pctx-val">Google Places ~$5–30/mo · Hunter.io $0–49/mo (separate)</div></div>
+        <div><div class="pctx-label">What It Is</div><div class="pctx-val">Custom lead-sourcing add-on, configured per client</div></div>
+        <div><div class="pctx-label">Availability</div><div class="pctx-val">Built for you once you're onboarded on Core or Enterprise</div></div>
         <div><div class="pctx-label">Best For</div><div class="pctx-val">Contractors who want inbound leads without hiring a sales team</div></div>
       </div>
       <div class="pricing-grid">
@@ -988,17 +979,13 @@ footer{border-top:1px solid var(--border);padding:2.5rem 2rem;background:var(--b
           <div class="price-tier">Standalone</div>
           <h3 style="font-size:1.05rem;font-weight:700;margin-bottom:.35rem">LeadAgent Solo</h3>
           <div class="price-amt price-dual"><span class="dollar">$197</span><span class="eur-price">/ €181</span><span class="per">/mo</span></div>
-          <p class="price-desc">Run LeadAgentOS on its own, export leads to any CRM or spreadsheet. Mac or server deployment.</p>
+          <p class="price-desc">A custom-configured lead-sourcing add-on, built for your service area and trade. Contact us to scope.</p>
           <ul class="pf-list">
-            <li><span class="ck">✓</span> Runs every 6hrs autonomously</li>
-            <li><span class="ck">✓</span> Google Places scanning</li>
+            <li><span class="ck">✓</span> Configured to your service area and trade</li>
             <li><span class="ck">✓</span> Lead scoring 0–100</li>
-            <li><span class="ck">✓</span> Hunter.io email finding</li>
-            <li><span class="ck">✓</span> Auto-outreach via Mail.app</li>
-            <li><span class="ck">✓</span> Hot/Warm/Cold categorization</li>
             <li><span class="ck">✓</span> CSV export</li>
           </ul>
-          <a href="/early-access.html" class="btn btn-ghost" style="width:100%;justify-content:center">Get LeadAgent</a>
+          <a href="mailto:info@buildagentos.com" class="btn btn-ghost" style="width:100%;justify-content:center">Talk to us</a>
         </div>
         <div class="price-card featured">
           <div class="price-tier">Bundled</div>
@@ -1008,7 +995,7 @@ footer{border-top:1px solid var(--border);padding:2.5rem 2rem;background:var(--b
           <ul class="pf-list">
             <li><span class="ck">✓</span> Everything in LeadAgent Solo</li>
             <li><span class="ck">✓</span> Direct BuildAgentOS pipeline integration</li>
-            <li><span class="ck">✓</span> Hot leads auto-enter acquisition flow</li>
+            <li><span class="ck">✓</span> Hot leads flow directly into the pipeline</li>
             <li><span class="ck">✓</span> All 6 Core agents deployed</li>
             <li><span class="ck">✓</span> Full lead → invoice automation</li>
             <li><span class="ck">✓</span> One dashboard for everything</li>
