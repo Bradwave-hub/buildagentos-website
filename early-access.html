@@ -477,6 +477,8 @@ const state = {
 
 const STEPS = 6;
 const VAT_RATE = 0.20;
+// Format money with thousands separators and 2 decimals, e.g. 1443 -> "1,443.00"
+const fmtNum = n => n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
 // NAVIGATION
 function nextStep(to) {
@@ -540,7 +542,8 @@ function selectTier(type, val, el, usd, eur) {
   state.product = val;
   state.productPrice = parseFloat(usd);
   state.productPriceEur = parseFloat(eur);
-  state.productName = el.querySelector('.tier-name').textContent.trim();
+  // Use only the leading text node so the "Up to N staff" span suffix is excluded
+  state.productName = el.querySelector('.tier-name').firstChild.textContent.trim();
 }
 
 function toggleAddon(el, key, usd, eur) {
@@ -564,11 +567,12 @@ function buildQuote() {
   let oneOffUSD = 0;
   let oneOffEUR = 0;
 
-  let addonLines = '';
+  // Split add-ons into monthly vs one-off; each item is listed exactly once.
+  const monthlyAddons = [];
+  const oneOffAddons = [];
   Object.values(state.addons).forEach(a => {
-    if (a.isMonthly) { monthlyUSD += a.usd; monthlyEUR += a.eur; }
-    else { oneOffUSD += a.usd; oneOffEUR += a.eur; }
-    addonLines += `<div class="quote-line"><span class="quote-line-name">${a.name}</span><span class="quote-line-val">${a.isMonthly ? '+$'+a.usd+' / €'+a.eur+'/mo' : '+$'+a.usd+' / €'+a.eur+' one-off'}</span></div>`;
+    if (a.isMonthly) { monthlyUSD += a.usd; monthlyEUR += a.eur; monthlyAddons.push(a); }
+    else { oneOffUSD += a.usd; oneOffEUR += a.eur; oneOffAddons.push(a); }
   });
 
   const vatMonthlyUSD = monthlyUSD * VAT_RATE;
@@ -583,14 +587,27 @@ function buildQuote() {
 
   state.quote = { monthlyUSD, monthlyEUR, totalMonthlyUSD, totalMonthlyEUR, oneOffUSD, oneOffEUR, totalOneOffUSD, totalOneOffEUR, ref };
 
+  const money = (usd, eur) => `$${fmtNum(usd)} / €${fmtNum(eur)}`;
+
   let html = `<div class="quote-header"><span class="quote-header-title">// BuildAgentOS Quote</span><span class="quote-ref">Ref: ${ref}</span></div><div class="quote-body">`;
-  html += `<div class="quote-line"><span class="quote-line-name">${state.productName}</span><span class="quote-line-val">$${state.productPrice} / €${state.productPriceEur}/mo</span></div>`;
-  html += addonLines;
-  html += `<div class="quote-line subtotal"><span class="quote-line-name">Monthly Subtotal</span><span class="quote-line-val">$${monthlyUSD.toFixed(2)} / €${monthlyEUR.toFixed(2)}</span></div>`;
-  html += `<div class="quote-line"><span class="quote-line-name">VAT (20%)</span><span class="quote-line-val">$${vatMonthlyUSD.toFixed(2)} / €${vatMonthlyEUR.toFixed(2)}</span></div>`;
-  html += `<div class="quote-line total"><span class="quote-line-name">Total Monthly (inc. VAT)</span><span class="quote-line-val">$${totalMonthlyUSD.toFixed(2)} / €${totalMonthlyEUR.toFixed(2)}</span></div>`;
+
+  // MONTHLY SECTION — product + monthly add-ons, pre-VAT, then subtotal/VAT/total
+  html += `<div class="quote-line"><span class="quote-line-name">${state.productName} (monthly)</span><span class="quote-line-val">${money(state.productPrice, state.productPriceEur)}</span></div>`;
+  monthlyAddons.forEach(a => {
+    html += `<div class="quote-line"><span class="quote-line-name">${a.name} (monthly)</span><span class="quote-line-val">${money(a.usd, a.eur)}</span></div>`;
+  });
+  html += `<div class="quote-line subtotal"><span class="quote-line-name">Monthly Subtotal</span><span class="quote-line-val">${money(monthlyUSD, monthlyEUR)}</span></div>`;
+  html += `<div class="quote-line"><span class="quote-line-name">VAT (20%)</span><span class="quote-line-val">${money(vatMonthlyUSD, vatMonthlyEUR)}</span></div>`;
+  html += `<div class="quote-line total"><span class="quote-line-name">Total Monthly (inc VAT)</span><span class="quote-line-val">${money(totalMonthlyUSD, totalMonthlyEUR)}</span></div>`;
+
+  // ONE-OFF SECTION — only rendered when one-off items are selected
   if (oneOffUSD > 0) {
-    html += `<div class="quote-line" style="margin-top:.75rem"><span class="quote-line-name">One-off Setup (inc. VAT 20%)</span><span class="quote-line-val">$${totalOneOffUSD.toFixed(2)} / €${totalOneOffEUR.toFixed(2)}</span></div>`;
+    oneOffAddons.forEach((a, i) => {
+      const sep = i === 0 ? ' style="margin-top:1.25rem;padding-top:1.25rem;border-top:1px solid var(--border-hi)"' : '';
+      html += `<div class="quote-line"${sep}><span class="quote-line-name">${a.name} (one-off)</span><span class="quote-line-val">${money(a.usd, a.eur)}</span></div>`;
+    });
+    html += `<div class="quote-line"><span class="quote-line-name">VAT (20%)</span><span class="quote-line-val">${money(vatOneOffUSD, vatOneOffEUR)}</span></div>`;
+    html += `<div class="quote-line total"><span class="quote-line-name">Total One-off (inc VAT)</span><span class="quote-line-val">${money(totalOneOffUSD, totalOneOffEUR)}</span></div>`;
   }
   html += `</div>`;
   box.innerHTML = html;
@@ -632,7 +649,19 @@ function buildEmailPreview() {
   document.getElementById('prevCC').textContent = email;
   document.getElementById('prevSubject').textContent = `BuildAgentOS Early Access Application — ${company} [Ref: ${q.ref}]`;
 
-  const addonNames = Object.values(state.addons).map(a => '• ' + a.name).join('\n') || '• None selected';
+  // Build priced item lines per section — each item appears exactly once.
+  const monthlyItemLines = [`${state.productName}: $${fmtNum(state.productPrice)}/mo (€${fmtNum(state.productPriceEur)}/mo)`];
+  const oneOffItemLines = [];
+  Object.values(state.addons).forEach(a => {
+    if (a.isMonthly) monthlyItemLines.push(`${a.name}: $${fmtNum(a.usd)}/mo (€${fmtNum(a.eur)}/mo)`);
+    else oneOffItemLines.push(`${a.name}: $${fmtNum(a.usd)} (€${fmtNum(a.eur)})`);
+  });
+  const oneOffSection = q.oneOffUSD > 0 ? `
+
+── ONE-OFF ──
+${oneOffItemLines.join('\n')}
+VAT (20%):                $${fmtNum(q.oneOffUSD * VAT_RATE)}  (€${fmtNum(q.oneOffEUR * VAT_RATE)})
+Total One-off (inc VAT):  $${fmtNum(q.totalOneOffUSD)}  (€${fmtNum(q.totalOneOffEUR)})` : '';
 
   const body = `Dear Bradley,
 
@@ -652,17 +681,12 @@ Trade:         ${tradeLabel}
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 SELECTED PRODUCT & QUOTE [Ref: ${q.ref}]
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Product:       ${state.productName}
-Base Price:    $${state.productPrice}/mo (€${state.productPriceEur}/mo)
+── MONTHLY ──
+${monthlyItemLines.join('\n')}
+Monthly Subtotal:         $${fmtNum(q.monthlyUSD)}/mo  (€${fmtNum(q.monthlyEUR)}/mo)
+VAT (20%):                $${fmtNum(q.monthlyUSD * VAT_RATE)}/mo  (€${fmtNum(q.monthlyEUR * VAT_RATE)}/mo)
+Total Monthly (inc VAT):  $${fmtNum(q.totalMonthlyUSD)}/mo  (€${fmtNum(q.totalMonthlyEUR)}/mo)${oneOffSection}
 
-Add-ons Selected:
-${addonNames}
-
-── MONTHLY PRICING BREAKDOWN ──
-Subtotal:      $${q.monthlyUSD.toFixed(2)}/mo  (€${q.monthlyEUR.toFixed(2)}/mo)
-VAT (20%):     $${(q.monthlyUSD * VAT_RATE).toFixed(2)}/mo  (€${(q.monthlyEUR * VAT_RATE).toFixed(2)}/mo)
-Total/Month:   $${q.totalMonthlyUSD.toFixed(2)}/mo  (€${q.totalMonthlyEUR.toFixed(2)}/mo)
-${q.oneOffUSD > 0 ? `One-off Setup: $${q.totalOneOffUSD.toFixed(2)}  (€${q.totalOneOffEUR.toFixed(2)})\n` : ''}
 Contract:      ${state.fileName ? state.fileName + ' (attached)' : 'Please send contract for signature'}
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
