@@ -427,11 +427,11 @@ body{font-family:var(--fb);background:var(--black);color:var(--text);min-height:
   <div class="form-panel" id="step5">
     <span class="panel-tag">// Step 6 of 6 — Review & send</span>
     <h1 class="panel-title">REVIEW YOUR<br><span>APPLICATION</span></h1>
-    <p class="panel-sub">This email will be sent to <strong style="color:var(--orange)">info@buildagentos.com</strong> and a copy to you. Review before sending.</p>
+    <p class="panel-sub">This email will be sent to <strong style="color:var(--orange)">buildagentos@gmail.com</strong> and a copy to you. Review before sending.</p>
 
     <div class="email-preview">
       <div class="email-header">
-        <div class="email-field"><span class="email-field-label">To</span><span class="email-field-val">info@buildagentos.com</span></div>
+        <div class="email-field"><span class="email-field-label">To</span><span class="email-field-val">buildagentos@gmail.com</span></div>
         <div class="email-field"><span class="email-field-label">CC</span><span class="email-field-val" id="prevCC">—</span></div>
         <div class="email-field"><span class="email-field-label">Subject</span><span class="email-field-val subject" id="prevSubject">—</span></div>
       </div>
@@ -451,7 +451,7 @@ body{font-family:var(--fb);background:var(--black);color:var(--text);min-height:
     <div class="success-wrap">
       <span class="success-icon">🚀</span>
       <h1 class="success-title">YOU'RE IN THE<br><span>QUEUE!</span></h1>
-      <p class="success-sub">Your early access application and quote have been sent to <strong style="color:var(--orange)">info@buildagentos.com</strong>. Bradley will personally review your application and be in touch within 24 hours.</p>
+      <p class="success-sub">Your early access application and quote have been sent to <strong style="color:var(--orange)">buildagentos@gmail.com</strong>. Bradley will personally review your application and be in touch within 24 hours.</p>
       <div class="success-ref" id="successRef">Ref: BAO-XXXX</div>
       <div class="success-links">
         <a href="https://buildagentos.com/#demo" class="success-link primary">⚡ Try the Live Demo</a>
@@ -713,7 +713,7 @@ ${phone || ''}`;
 function sendEmail() {
   const subject = encodeURIComponent(state.emailSubject);
   const body = encodeURIComponent(state.emailBody);
-  const mailto = `mailto:info@buildagentos.com?cc=${encodeURIComponent(document.getElementById('email').value)}&subject=${subject}&body=${body}`;
+  const mailto = `mailto:buildagentos@gmail.com?cc=${encodeURIComponent(document.getElementById('email').value)}&subject=${subject}&body=${body}`;
   window.location.href = mailto;
   // Show success
   setTimeout(() => {
