@@ -531,6 +531,13 @@
       margin-top: 2rem
     }
 
+    .btn-row .btn-next,
+    .btn-row .btn-back {
+      flex: 1;
+      justify-content: center;
+      text-align: center
+    }
+
     .btn-next {
       background: var(--orange);
       color: #fff;
@@ -1065,7 +1072,7 @@
           </div>
           <div class="addon-price">+$149 / €137/mo</div>
         </div>
-        <div class="addon-item" onclick="toggleAddon(this,'whitelabel',297,273)">
+        <div class="addon-item" id="addon-whitelabel" onclick="toggleAddon(this,'whitelabel',297,273)">
           <div class="addon-check">✓</div>
           <div class="addon-info">
             <div class="addon-name">White-Label Branding</div>
@@ -1198,7 +1205,22 @@
       el.classList.add('active');
       updateProgress(n);
       window.scrollTo({ top: 0, behavior: 'smooth' });
+      if (n === 3) toggleCustomEngagementAddons();
       if (n === 4) buildQuote();
+    }
+
+    function toggleCustomEngagementAddons() {
+      const whitelabelCard = document.getElementById('addon-whitelabel');
+      if (!whitelabelCard) return;
+      if (state.product === 'custom') {
+        whitelabelCard.style.display = 'none';
+        if (state.addons && state.addons.whitelabel) {
+          whitelabelCard.classList.remove('checked');
+          delete state.addons.whitelabel;
+        }
+      } else {
+        whitelabelCard.style.display = '';
+      }
     }
 
     function updateProgress(n) {
